@@ -488,7 +488,7 @@ export default function FantasyPage() {
                     setEspnCreds({ ...espnCreds, espn_swid: e.target.value })
                   }
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900"
-                  placeholder="{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}"
+                  placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX (brackets optional)"
                 />
               </div>
 

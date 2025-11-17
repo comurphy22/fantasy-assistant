@@ -21,11 +21,26 @@ YOUR_YEAR = int(os.getenv('ESPN_YEAR', 2025))
 YOUR_ESPN_S2 = os.getenv('ESPN_S2', 'AEANF5s/YFx8uRBzF0ySSDkyZkZVNuQ95avS3MuJaOMoWTdXFYiRItuIfiDSE/EADpCTJYbypKBuEva4kJ6+3kj/G58wrOwlk+HiORhAHPQeZ/ibNioe6PRhLjSLMttbmV2PKL6SjFT87LpLTYlgYL9Pw3cm32NNS8740CFpIbsUUBGLJ0Ry6dpXGL/dxMhX7AmhmdwQhfV7LsopKrI6tR/YD2NUCxTfs722KQHg0f64uSK3zdXAtNM8wNAkc7K1WsWCY1g35RHzE8esgza5WXwVcld3X7pAdGX6Wa1fn34OPA==')
 YOUR_SWID = os.getenv('ESPN_SWID', '{06B8EDC1-CAAD-40F0-A6AB-22C15EDF791B}')
 
+def normalize_swid(swid):
+    """Normalize SWID format - espn-api library expects curly brackets"""
+    if not swid:
+        return swid
+    # Remove any existing brackets
+    swid = swid.strip().strip('{}')
+    # Add curly brackets if not present
+    if not swid.startswith('{'):
+        swid = '{' + swid
+    if not swid.endswith('}'):
+        swid = swid + '}'
+    return swid
+
 def get_league_and_team(espn_s2=None, swid=None, league_id=None, team_id=None, year=None):
     """Helper function to initialize league and get team"""
     # Use provided credentials or fall back to defaults
     espn_s2 = espn_s2 or YOUR_ESPN_S2
     swid = swid or YOUR_SWID
+    # Normalize SWID format (add curly brackets if missing)
+    swid = normalize_swid(swid)
     league_id = league_id or YOUR_LEAGUE_ID
     team_id = team_id or YOUR_TEAM_ID
     year = year or YOUR_YEAR
@@ -76,6 +91,12 @@ def get_my_roster():
         # Validate required credentials
         if not espn_s2 or not swid:
             return jsonify({'error': f'Missing ESPN credentials - ESPNS2: {"present" if espn_s2 else "MISSING"}, SWID: {"present" if swid else "MISSING"}'}), 400
+        
+        # Normalize SWID format (espn-api expects curly brackets)
+        swid_normalized = normalize_swid(swid)
+        if swid != swid_normalized:
+            print(f"SWID format normalized: {swid[:20]}... -> {swid_normalized[:20]}...")
+        swid = swid_normalized
         
         if not league_id_str or not team_id_str or not year_str:
             return jsonify({'error': 'Missing league/team/year information'}), 400
@@ -161,6 +182,9 @@ def optimize_lineup():
         
         if not league_id_str or not team_id_str or not year_str:
             return jsonify({'error': 'Missing league/team/year information'}), 400
+        
+        # Normalize SWID format (espn-api expects curly brackets)
+        swid = normalize_swid(swid)
         
         try:
             league_id = int(league_id_str)
@@ -274,6 +298,9 @@ def get_free_agents():
         
         if not league_id_str or not team_id_str or not year_str:
             return jsonify({'error': 'Missing league/team/year information'}), 400
+        
+        # Normalize SWID format (espn-api expects curly brackets)
+        swid = normalize_swid(swid)
         
         try:
             league_id = int(league_id_str)
