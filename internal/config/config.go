@@ -19,6 +19,7 @@ type Config struct {
 	YahooClientSecret string
 	YahooRedirectURL  string
 	ClientAppURL      string
+	FlaskServiceURL   string
 }
 
 func Load() *Config {
@@ -39,6 +40,7 @@ func Load() *Config {
 		YahooClientSecret: getEnv("YAHOO_CLIENT_SECRET", ""),
 		YahooRedirectURL:  getEnv("YAHOO_REDIRECT_URL", ""),
 		ClientAppURL:      getEnv("CLIENT_APP_URL", "http://localhost:3000"),
+		FlaskServiceURL:   getEnv("FLASK_SERVICE_URL", "http://localhost:5002"),
 	}
 
 	// Validate critical config

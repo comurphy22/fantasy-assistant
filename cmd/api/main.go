@@ -47,7 +47,7 @@ func main() {
 	db := mongoClient.Database(cfg.DBName)
 	yahooService := services.NewYahooService(db, cfg)
 	fantasyHandler := handlers.NewFantasyHandler(cfg, yahooService)
-	espnHandler := handlers.NewESPNHandler(db, "http://localhost:5002")
+	espnHandler := handlers.NewESPNHandler(db, cfg.FlaskServiceURL)
 
 	// Middleware
 	router.Use(middleware.CORS())
