@@ -233,7 +233,7 @@ export default function InsightsPage() {
             Ready to Predict Game Flow
           </h3>
           <p className="text-gray-600">
-            Enter a game ID and click "Predict" to see AI-powered game script analysis
+            Enter a game ID and click &quot;Predict&quot; to see AI-powered game script analysis
           </p>
         </div>
       )}
