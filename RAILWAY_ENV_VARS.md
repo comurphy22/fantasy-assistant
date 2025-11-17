@@ -1,26 +1,27 @@
 # Railway Environment Variables
 
-Copy these exact values into Railway's Variables section:
+Copy these values into Railway's Variables section (replace with your actual values):
 
 ## Required Variables
 
 ```
-MONGO_URI=mongodb+srv://connermurphy03_db_user:nVx3NYOGnZU4Bbbp@cluster0.srgfppn.mongodb.net/nfl_platform?retryWrites=true&w=majority
+MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/nfl_platform?retryWrites=true&w=majority
 ```
+**Get this from MongoDB Atlas → Connect → Connect your application**
 
 ```
 DB_NAME=nfl_platform
 ```
 
 ```
-JWT_SECRET=abc123
+JWT_SECRET=your-secret-key-here
 ```
+**Generate a new one: `openssl rand -base64 32`**
 
-(Or generate a new one: `openssl rand -base64 32`)
-
 ```
-GEMINI_API_KEY=AIzaSyBqxQPcW5eBDP0X5YHomH7cLZi9jRA8jhU
+GEMINI_API_KEY=your-gemini-api-key-here
 ```
+**Get this from Google AI Studio: https://aistudio.google.com/apikey**
 
 ```
 PORT=8080

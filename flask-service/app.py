@@ -16,11 +16,12 @@ allowed_origins = os.getenv('ALLOWED_ORIGINS', 'http://localhost:8080,https://fa
 CORS(app, resources={r"/api/*": {"origins": allowed_origins}})
 
 # Default credentials (can be overridden via request headers or environment)
-YOUR_LEAGUE_ID = int(os.getenv('ESPN_LEAGUE_ID', 929602296))
-YOUR_TEAM_ID = int(os.getenv('ESPN_TEAM_ID', 10))
+# NOTE: These are placeholder values. In production, always use environment variables.
+YOUR_LEAGUE_ID = int(os.getenv('ESPN_LEAGUE_ID', 0))
+YOUR_TEAM_ID = int(os.getenv('ESPN_TEAM_ID', 0))
 YOUR_YEAR = int(os.getenv('ESPN_YEAR', 2025))
-YOUR_ESPN_S2 = os.getenv('ESPN_S2', 'AEANF5s/YFx8uRBzF0ySSDkyZkZVNuQ95avS3MuJaOMoWTdXFYiRItuIfiDSE/EADpCTJYbypKBuEva4kJ6+3kj/G58wrOwlk+HiORhAHPQeZ/ibNioe6PRhLjSLMttbmV2PKL6SjFT87LpLTYlgYL9Pw3cm32NNS8740CFpIbsUUBGLJ0Ry6dpXGL/dxMhX7AmhmdwQhfV7LsopKrI6tR/YD2NUCxTfs722KQHg0f64uSK3zdXAtNM8wNAkc7K1WsWCY1g35RHzE8esgza5WXwVcld3X7pAdGX6Wa1fn34OPA==')
-YOUR_SWID = os.getenv('ESPN_SWID', '{06B8EDC1-CAAD-40F0-A6AB-22C15EDF791B}')
+YOUR_ESPN_S2 = os.getenv('ESPN_S2', '')
+YOUR_SWID = os.getenv('ESPN_SWID', '')
 
 def normalize_swid(swid):
     """Normalize SWID format - espn-api library expects curly brackets"""
