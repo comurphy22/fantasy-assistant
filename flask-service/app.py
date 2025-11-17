@@ -30,12 +30,23 @@ def get_league_and_team(espn_s2=None, swid=None, league_id=None, team_id=None, y
     team_id = team_id or YOUR_TEAM_ID
     year = year or YOUR_YEAR
     
-    league = League(
-        league_id=league_id,
-        year=year,
-        espn_s2=espn_s2,
-        swid=swid
-    )
+    try:
+        league = League(
+            league_id=league_id,
+            year=year,
+            espn_s2=espn_s2,
+            swid=swid
+        )
+    except Exception as e:
+        error_msg = str(e)
+        print(f"ESPN League initialization error: {error_msg}")
+        # Check for common ESPN API errors
+        if '403' in error_msg or 'Forbidden' in error_msg:
+            raise Exception("ESPN returned HTTP 403: Your credentials may be expired or you don't have access to this league. Please refresh your ESPN cookies.")
+        elif '401' in error_msg or 'Unauthorized' in error_msg:
+            raise Exception("ESPN returned HTTP 401: Your credentials are invalid.")
+        else:
+            raise Exception(f"ESPN API error: {error_msg}")
     
     team = None
     for t in league.teams:
@@ -44,7 +55,7 @@ def get_league_and_team(espn_s2=None, swid=None, league_id=None, team_id=None, y
             break
     
     if not team:
-        return None, None, f'Team with ID {team_id} not found'
+        return None, None, f'Team with ID {team_id} not found in league {league_id}'
     
     return league, team, None
 
@@ -121,13 +132,13 @@ def get_my_roster():
     
     except Exception as e:
         error_msg = str(e)
+        print(f"ESPN roster endpoint error: {error_msg}")
         # Check if it's an ESPN API error
         if '403' in error_msg or 'Forbidden' in error_msg:
-            return jsonify({'error': 'ESPN returned an HTTP 403. Your credentials may be expired or invalid. Please refresh your ESPN cookies.'}), 403
+            return jsonify({'error': 'ESPN returned HTTP 403. Your credentials may be expired or you don\'t have access to this league. Please get fresh ESPN cookies and reconnect your account.'}), 403
         elif '401' in error_msg or 'Unauthorized' in error_msg:
-            return jsonify({'error': 'ESPN returned an HTTP 401. Your credentials are invalid.'}), 401
+            return jsonify({'error': 'ESPN returned HTTP 401. Your credentials are invalid. Please reconnect your ESPN account.'}), 401
         else:
-            print(f"ESPN roster error: {error_msg}")
             return jsonify({'error': f'ESPN API error: {error_msg}'}), 500
 
 @app.route('/api/espn/optimize-lineup', methods=['GET'])

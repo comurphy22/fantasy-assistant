@@ -197,6 +197,7 @@ func (h *ESPNHandler) GetRoster(c *gin.Context) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Printf("ESPN GetRoster: Flask service connection error: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch roster from ESPN service"})
 		return
 	}
@@ -204,8 +205,10 @@ func (h *ESPNHandler) GetRoster(c *gin.Context) {
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "ESPN service returned error: " + string(body),
+		errorMsg := string(body)
+		fmt.Printf("ESPN GetRoster: Flask returned status %d: %s\n", resp.StatusCode, errorMsg)
+		c.JSON(resp.StatusCode, gin.H{
+			"error": "ESPN service returned error: " + errorMsg,
 		})
 		return
 	}
