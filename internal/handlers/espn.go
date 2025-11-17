@@ -173,7 +173,21 @@ func (h *ESPNHandler) GetRoster(c *gin.Context) {
 
 	// Call Flask service to get roster
 	flaskURL := fmt.Sprintf("%s/api/espn/roster", h.flaskServiceURL)
-	resp, err := http.Get(flaskURL)
+	req, err := http.NewRequest("GET", flaskURL, nil)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create request"})
+		return
+	}
+	
+	// Pass user's ESPN credentials in headers
+	req.Header.Set("X-ESPN-S2", user.ESPNS2)
+	req.Header.Set("X-ESPN-SWID", user.ESPNSWID)
+	req.Header.Set("X-ESPN-LEAGUE-ID", fmt.Sprintf("%d", user.LeagueID))
+	req.Header.Set("X-ESPN-TEAM-ID", fmt.Sprintf("%d", user.TeamID))
+	req.Header.Set("X-ESPN-YEAR", fmt.Sprintf("%d", user.Year))
+	
+	client := &http.Client{}
+	resp, err := client.Do(req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch roster from ESPN service"})
 		return
@@ -230,7 +244,21 @@ func (h *ESPNHandler) OptimizeLineup(c *gin.Context) {
 
 	// Call Flask service to get optimized lineup
 	flaskURL := fmt.Sprintf("%s/api/espn/optimize-lineup", h.flaskServiceURL)
-	resp, err := http.Get(flaskURL)
+	req, err := http.NewRequest("GET", flaskURL, nil)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create request"})
+		return
+	}
+	
+	// Pass user's ESPN credentials in headers
+	req.Header.Set("X-ESPN-S2", user.ESPNS2)
+	req.Header.Set("X-ESPN-SWID", user.ESPNSWID)
+	req.Header.Set("X-ESPN-LEAGUE-ID", fmt.Sprintf("%d", user.LeagueID))
+	req.Header.Set("X-ESPN-TEAM-ID", fmt.Sprintf("%d", user.TeamID))
+	req.Header.Set("X-ESPN-YEAR", fmt.Sprintf("%d", user.Year))
+	
+	client := &http.Client{}
+	resp, err := client.Do(req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch optimized lineup from ESPN service"})
 		return
@@ -309,7 +337,21 @@ func (h *ESPNHandler) GetFreeAgents(c *gin.Context) {
 	if position != "" {
 		flaskURL += "&position=" + position
 	}
-	resp, err := http.Get(flaskURL)
+	req, err := http.NewRequest("GET", flaskURL, nil)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create request"})
+		return
+	}
+	
+	// Pass user's ESPN credentials in headers
+	req.Header.Set("X-ESPN-S2", user.ESPNS2)
+	req.Header.Set("X-ESPN-SWID", user.ESPNSWID)
+	req.Header.Set("X-ESPN-LEAGUE-ID", fmt.Sprintf("%d", user.LeagueID))
+	req.Header.Set("X-ESPN-TEAM-ID", fmt.Sprintf("%d", user.TeamID))
+	req.Header.Set("X-ESPN-YEAR", fmt.Sprintf("%d", user.Year))
+	
+	client := &http.Client{}
+	resp, err := client.Do(req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch free agents from ESPN service"})
 		return

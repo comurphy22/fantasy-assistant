@@ -21,30 +21,55 @@ YOUR_YEAR = int(os.getenv('ESPN_YEAR', 2025))
 YOUR_ESPN_S2 = os.getenv('ESPN_S2', 'AEANF5s/YFx8uRBzF0ySSDkyZkZVNuQ95avS3MuJaOMoWTdXFYiRItuIfiDSE/EADpCTJYbypKBuEva4kJ6+3kj/G58wrOwlk+HiORhAHPQeZ/ibNioe6PRhLjSLMttbmV2PKL6SjFT87LpLTYlgYL9Pw3cm32NNS8740CFpIbsUUBGLJ0Ry6dpXGL/dxMhX7AmhmdwQhfV7LsopKrI6tR/YD2NUCxTfs722KQHg0f64uSK3zdXAtNM8wNAkc7K1WsWCY1g35RHzE8esgza5WXwVcld3X7pAdGX6Wa1fn34OPA==')
 YOUR_SWID = os.getenv('ESPN_SWID', '{06B8EDC1-CAAD-40F0-A6AB-22C15EDF791B}')
 
-def get_league_and_team():
+def get_league_and_team(espn_s2=None, swid=None, league_id=None, team_id=None, year=None):
     """Helper function to initialize league and get team"""
+    # Use provided credentials or fall back to defaults
+    espn_s2 = espn_s2 or YOUR_ESPN_S2
+    swid = swid or YOUR_SWID
+    league_id = league_id or YOUR_LEAGUE_ID
+    team_id = team_id or YOUR_TEAM_ID
+    year = year or YOUR_YEAR
+    
     league = League(
-        league_id=YOUR_LEAGUE_ID,
-        year=YOUR_YEAR,
-        espn_s2=YOUR_ESPN_S2,
-        swid=YOUR_SWID
+        league_id=league_id,
+        year=year,
+        espn_s2=espn_s2,
+        swid=swid
     )
     
     team = None
     for t in league.teams:
-        if t.team_id == YOUR_TEAM_ID:
+        if t.team_id == team_id:
             team = t
             break
     
     if not team:
-        return None, None, f'Team with ID {YOUR_TEAM_ID} not found'
+        return None, None, f'Team with ID {team_id} not found'
     
     return league, team, None
 
 @app.route('/api/espn/roster', methods=['GET'])
 def get_my_roster():
     try:
-        league, team, error = get_league_and_team()
+        # Get credentials from request headers (sent by Go API)
+        espn_s2 = request.headers.get('X-ESPN-S2')
+        swid = request.headers.get('X-ESPN-SWID')
+        league_id = request.headers.get('X-ESPN-LEAGUE-ID')
+        team_id = request.headers.get('X-ESPN-TEAM-ID')
+        year = request.headers.get('X-ESPN-YEAR')
+        
+        # Convert to appropriate types
+        league_id = int(league_id) if league_id else None
+        team_id = int(team_id) if team_id else None
+        year = int(year) if year else None
+        
+        league, team, error = get_league_and_team(
+            espn_s2=espn_s2,
+            swid=swid,
+            league_id=league_id,
+            team_id=team_id,
+            year=year
+        )
         if error:
             return jsonify({'error': error}), 404
         
@@ -90,7 +115,24 @@ def get_my_roster():
 @app.route('/api/espn/optimize-lineup', methods=['GET'])
 def optimize_lineup():
     try:
-        league, team, error = get_league_and_team()
+        # Get credentials from request headers
+        espn_s2 = request.headers.get('X-ESPN-S2')
+        swid = request.headers.get('X-ESPN-SWID')
+        league_id = request.headers.get('X-ESPN-LEAGUE-ID')
+        team_id = request.headers.get('X-ESPN-TEAM-ID')
+        year = request.headers.get('X-ESPN-YEAR')
+        
+        league_id = int(league_id) if league_id else None
+        team_id = int(team_id) if team_id else None
+        year = int(year) if year else None
+        
+        league, team, error = get_league_and_team(
+            espn_s2=espn_s2,
+            swid=swid,
+            league_id=league_id,
+            team_id=team_id,
+            year=year
+        )
         if error:
             return jsonify({'error': error}), 404
         
@@ -176,7 +218,24 @@ def optimize_lineup():
 @app.route('/api/espn/free-agents', methods=['GET'])
 def get_free_agents():
     try:
-        league, team, error = get_league_and_team()
+        # Get credentials from request headers
+        espn_s2 = request.headers.get('X-ESPN-S2')
+        swid = request.headers.get('X-ESPN-SWID')
+        league_id = request.headers.get('X-ESPN-LEAGUE-ID')
+        team_id = request.headers.get('X-ESPN-TEAM-ID')
+        year = request.headers.get('X-ESPN-YEAR')
+        
+        league_id = int(league_id) if league_id else None
+        team_id = int(team_id) if team_id else None
+        year = int(year) if year else None
+        
+        league, team, error = get_league_and_team(
+            espn_s2=espn_s2,
+            swid=swid,
+            league_id=league_id,
+            team_id=team_id,
+            year=year
+        )
         if error:
             return jsonify({'error': error}), 404
         
