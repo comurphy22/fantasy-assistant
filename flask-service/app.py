@@ -3,6 +3,7 @@ from espn_api.football import League
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
+import requests
 
 # Load environment variables from .env file
 load_dotenv()
@@ -65,6 +66,28 @@ def get_league_and_team(espn_s2=None, swid=None, league_id=None, team_id=None, y
         error_type = type(e).__name__
         print(f"ESPN League initialization error (type: {error_type}): {error_msg}")
         print(f"Full error details: {repr(e)}")
+        
+        # Try to get more details by making a direct HTTP request
+        try:
+            test_url = f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/{year}/segments/0/leagues/{league_id}"
+            cookies = {
+                'swid': swid,
+                'espn_s2': espn_s2
+            }
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+                'Referer': 'https://fantasy.espn.com/football/',
+                'Origin': 'https://fantasy.espn.com'
+            }
+            test_resp = requests.get(test_url, cookies=cookies, headers=headers, timeout=10)
+            print(f"Direct HTTP test - Status: {test_resp.status_code}")
+            if test_resp.status_code != 200:
+                print(f"Direct HTTP test - Response body (first 500 chars): {test_resp.text[:500]}")
+                if test_resp.status_code == 403:
+                    print("Direct HTTP test confirms 403 Forbidden - credentials are likely expired or invalid")
+        except Exception as test_err:
+            print(f"Direct HTTP test failed: {test_err}")
+        
         # Check for common ESPN API errors
         if '403' in error_msg or 'Forbidden' in error_msg:
             raise Exception("ESPN returned HTTP 403: Your credentials may be expired or you don't have access to this league. Please refresh your ESPN cookies.")
