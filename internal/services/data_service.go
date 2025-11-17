@@ -407,25 +407,47 @@ func (s *DataService) GetUpcomingGames(ctx context.Context, team string) ([]mode
 }
 
 // GetScheduledGames gets scheduled (not yet played) games for a season/week
+// Also includes "final" games for historical analysis
 func (s *DataService) GetScheduledGames(ctx context.Context, season int, week int) ([]models.Game, error) {
+	// Build filter - include all statuses for now to get games
 	filter := bson.M{
 		"season": season,
-		"status": "scheduled",
 	}
 	if week > 0 {
 		filter["week"] = week
+	}
+	// Include all statuses: scheduled, final, live
+	filter["status"] = bson.M{"$in": []string{"scheduled", "final", "live"}}
+
+	log.Printf("🔍 GetScheduledGames query: season=%d, week=%d, filter=%+v", season, week, filter)
+
+	// First, count how many match
+	count, err := s.db.Collection("games").CountDocuments(ctx, filter)
+	log.Printf("🔍 GetScheduledGames count: %d", count)
+	if err != nil {
+		log.Printf("❌ GetScheduledGames CountDocuments error: %v", err)
 	}
 
 	cursor, err := s.db.Collection("games").Find(ctx, filter,
 		options.Find().SetSort(bson.D{{"start_time", 1}}))
 	if err != nil {
+		log.Printf("❌ GetScheduledGames Find error: %v", err)
 		return nil, err
 	}
 	defer cursor.Close(ctx)
 
-	var games []models.Game
+	games := make([]models.Game, 0) // Initialize as empty slice, not nil
 	if err := cursor.All(ctx, &games); err != nil {
+		log.Printf("❌ GetScheduledGames All error: %v", err)
 		return nil, err
+	}
+
+	log.Printf("✅ GetScheduledGames found %d games (count was %d)", len(games), count)
+	if len(games) > 0 {
+		log.Printf("   First game: game_id=%s, home=%s, away=%s, status=%s",
+			games[0].GameID, games[0].HomeTeam, games[0].AwayTeam, games[0].Status)
+	} else if count > 0 {
+		log.Printf("⚠️  CountDocuments found %d games but cursor.All returned 0 - possible unmarshaling issue", count)
 	}
 	return games, nil
 }

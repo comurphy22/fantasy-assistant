@@ -349,7 +349,7 @@ export default function FantasyPage() {
           Fantasy Central
         </h1>
         <p className="text-gray-600">
-          Connect your ESPN Fantasy account to preview your teams inside AI-ATL.
+          Connect your ESPN Fantasy account to preview your teams inside NFL Fantasy AI Assistant.
           This proof of concept syncs a snapshot of your rosters.
         </p>
       </div>
@@ -434,7 +434,7 @@ export default function FantasyPage() {
           <div className="mt-4 space-y-4">
             <p className="text-gray-600">
               Connect your ESPN Fantasy Football account to view your roster
-              directly in AI-ATL.
+              directly in NFL Fantasy AI Assistant.
             </p>
             <button
               onClick={() => setShowESPNForm(true)}

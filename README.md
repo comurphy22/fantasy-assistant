@@ -1,4 +1,3 @@
-
 https://github.com/user-attachments/assets/b84559d6-479c-4479-96e9-03c82fe48a01
 
 # AI-ATL NFL Platform
@@ -15,7 +14,7 @@ An NFL fantasy platform that predicts **HOW games will unfold** using AI, not ju
 2. **EPA-Based Analysis** - Uses Expected Points Added metrics to find undervalued players
 3. **Context-Aware Chatbot** - Fantasy advice based on your actual lineup and league settings
 4. **Injury Impact Predictor** - Quantifies how injuries affect backup player opportunities
-5. **Yahoo Fantasy Sync (PoC)** - Securely link your Yahoo account to preview active NFL fantasy teams
+5. **ESPN Fantasy Sync** - Securely link your ESPN Fantasy Football account to preview your roster and get personalized lineup recommendations
 
 ## 🏗️ Tech Stack
 
@@ -59,11 +58,12 @@ The API will be available at `http://localhost:8080`
 ### 📊 Load Data
 
 **Maximum data (26 seasons, 1M+ plays, 30-60 min)**:
+
 ```bash
 make load-maximum-data
 ```
 
-> 🔐 **Yahoo Fantasy OAuth**: add `YAHOO_CLIENT_ID`, `YAHOO_CLIENT_SECRET`, `YAHOO_REDIRECT_URL`, and `CLIENT_APP_URL` to your `.env` to enable the new fantasy integration. See `ENV_SETUP.md` for full instructions.
+> 🔐 **ESPN Fantasy Integration**: Connect your ESPN Fantasy Football account by providing your `espn_s2` cookie and `SWID` values along with your league ID, team ID, and season year. See `ENV_SETUP.md` for full instructions.
 
 ### API Endpoints
 
@@ -100,8 +100,8 @@ curl -X POST http://localhost:8080/api/v1/trades/analyze \
   -H "Content-Type: application/json" \
   -d '{"team_a_gives":["player1"],"team_a_gets":["player2"],"team_b_gives":["player2"],"team_b_gets":["player1"]}'
 
-# Fantasy Teams (Yahoo OAuth required)
-curl -X GET http://localhost:8080/api/v1/fantasy/teams \
+# ESPN Fantasy Roster (ESPN credentials required)
+curl -X GET http://localhost:8080/api/v1/espn/roster \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -218,7 +218,8 @@ All data comes from [NFLverse](https://github.com/nflverse), which provides:
 - [ ] Mobile app (React Native)
 - [ ] Historical accuracy tracking
 - [ ] Fine-tuned ML models for predictions
-- [ ] Integration with actual fantasy platforms (ESPN, Yahoo)
+- [ ] Enhanced ESPN Fantasy integration features
+- [ ] Integration with additional fantasy platforms (Sleeper, Yahoo)
 
 ## 👥 Team
 

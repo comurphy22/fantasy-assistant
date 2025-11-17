@@ -5,7 +5,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'AI-ATL NFL Platform',
+  title: 'NFL Fantasy AI Assistant',
   description: 'AI-Powered NFL Fantasy Analytics',
 }
 

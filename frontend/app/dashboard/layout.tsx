@@ -65,7 +65,7 @@ export default function DashboardLayout({
                 href="/dashboard"
                 className="text-2xl font-bold text-blue-600"
               >
-                AI-ATL NFL
+                NFL Fantasy AI Assistant
               </Link>
             </div>
 
