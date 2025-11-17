@@ -55,6 +55,18 @@ go run cmd/api/main.go
 
 The API will be available at `http://localhost:8080`
 
+## 🌐 Deployment
+
+**🎓 Free Deployment for Students**: See [`FREE_DEPLOYMENT_GUIDE.md`](./FREE_DEPLOYMENT_GUIDE.md) for step-by-step instructions to deploy completely free using:
+
+- **Frontend**: Vercel (Free)
+- **Backend**: Railway or Render (Free tier)
+- **Database**: MongoDB Atlas (Free M0 tier)
+
+**Quick Checklist**: See [`DEPLOYMENT_CHECKLIST.md`](./DEPLOYMENT_CHECKLIST.md) for a step-by-step checklist.
+
+**Production Deployment**: See [`DEPLOYMENT.md`](./DEPLOYMENT.md) for advanced deployment options including Docker and AWS.
+
 ### 📊 Load Data
 
 **Maximum data (26 seasons, 1M+ plays, 30-60 min)**:

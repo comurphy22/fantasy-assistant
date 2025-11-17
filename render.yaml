@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: nfl-platform-api
+    env: go
+    buildCommand: go build -o nfl-api cmd/api/main.go
+    startCommand: ./nfl-api
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: ENVIRONMENT
+        value: production
+      # Add these in Render dashboard:
+      # - MONGODB_URI
+      # - DB_NAME
+      # - JWT_SECRET
+      # - GEMINI_API_KEY
+
