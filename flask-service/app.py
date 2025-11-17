@@ -69,9 +69,13 @@ def get_my_roster():
         team_id_str = request.headers.get('X-ESPN-TEAM-ID')
         year_str = request.headers.get('X-ESPN-YEAR')
         
+        # Log received headers for debugging (mask credentials)
+        print(f"Flask received headers - LeagueID: {league_id_str}, TeamID: {team_id_str}, Year: {year_str}")
+        print(f"Flask received ESPNS2: {'present' if espn_s2 else 'MISSING'}, SWID: {'present' if swid else 'MISSING'}")
+        
         # Validate required credentials
         if not espn_s2 or not swid:
-            return jsonify({'error': 'Missing ESPN credentials (espn_s2 or swid)'}), 400
+            return jsonify({'error': f'Missing ESPN credentials - ESPNS2: {"present" if espn_s2 else "MISSING"}, SWID: {"present" if swid else "MISSING"}'}), 400
         
         if not league_id_str or not team_id_str or not year_str:
             return jsonify({'error': 'Missing league/team/year information'}), 400

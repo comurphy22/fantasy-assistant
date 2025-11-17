@@ -191,8 +191,21 @@ func (h *ESPNHandler) GetRoster(c *gin.Context) {
 	req.Header.Set("X-ESPN-TEAM-ID", fmt.Sprintf("%d", user.TeamID))
 	req.Header.Set("X-ESPN-YEAR", fmt.Sprintf("%d", user.Year))
 	
-	// Log for debugging
-	fmt.Printf("ESPN GetRoster: Calling Flask with LeagueID=%d, TeamID=%d, Year=%d\n", user.LeagueID, user.TeamID, user.Year)
+	// Log for debugging (mask credentials for security)
+	espnS2Masked := ""
+	if len(user.ESPNS2) > 10 {
+		espnS2Masked = user.ESPNS2[:10] + "..." + user.ESPNS2[len(user.ESPNS2)-5:]
+	} else {
+		espnS2Masked = "***"
+	}
+	swidMasked := ""
+	if len(user.ESPNSWID) > 10 {
+		swidMasked = user.ESPNSWID[:10] + "..."
+	} else {
+		swidMasked = "***"
+	}
+	fmt.Printf("ESPN GetRoster: Calling Flask with LeagueID=%d, TeamID=%d, Year=%d, ESPNS2=%s, SWID=%s\n", 
+		user.LeagueID, user.TeamID, user.Year, espnS2Masked, swidMasked)
 	
 	client := &http.Client{}
 	resp, err := client.Do(req)
