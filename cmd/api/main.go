@@ -109,6 +109,7 @@ func main() {
 			espn := protected.Group("/espn")
 			{
 				espn.POST("/credentials", espnHandler.SaveCredentials)
+				espn.DELETE("/credentials", espnHandler.DisconnectCredentials)
 				espn.GET("/status", espnHandler.GetStatus)
 				espn.GET("/roster", espnHandler.GetRoster)
 				espn.GET("/optimize-lineup", espnHandler.OptimizeLineup)

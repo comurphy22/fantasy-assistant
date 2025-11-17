@@ -130,6 +130,46 @@ func (h *ESPNHandler) SaveCredentials(c *gin.Context) {
 	})
 }
 
+// DisconnectCredentials removes ESPN credentials from user profile
+func (h *ESPNHandler) DisconnectCredentials(c *gin.Context) {
+	userID := c.GetString("user_id")
+	if userID == "" {
+		fmt.Println("ESPN DisconnectCredentials: No user_id in context")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	objectID, err := bson.ObjectIDFromHex(userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user ID"})
+		return
+	}
+
+	// Clear ESPN credentials
+	update := bson.M{
+		"$unset": bson.M{
+			"espn_s2":   "",
+			"espn_swid": "",
+			"league_id": "",
+			"team_id":   "",
+			"year":      "",
+		},
+	}
+
+	_, err = h.db.Collection("users").UpdateByID(c.Request.Context(), objectID, update)
+	if err != nil {
+		fmt.Printf("ESPN DisconnectCredentials: Database error: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to disconnect ESPN account"})
+		return
+	}
+
+	fmt.Printf("ESPN DisconnectCredentials: Successfully disconnected ESPN for user %s\n", userID)
+	c.JSON(http.StatusOK, gin.H{
+		"message":   "ESPN account disconnected successfully",
+		"connected": false,
+	})
+}
+
 // GetStatus checks if user has ESPN credentials stored
 func (h *ESPNHandler) GetStatus(c *gin.Context) {
 	userID := c.GetString("user_id")

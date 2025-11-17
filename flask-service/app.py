@@ -40,10 +40,18 @@ def get_league_and_team(espn_s2=None, swid=None, league_id=None, team_id=None, y
     espn_s2 = espn_s2 or YOUR_ESPN_S2
     swid = swid or YOUR_SWID
     # Normalize SWID format (add curly brackets if missing)
+    swid_original = swid
     swid = normalize_swid(swid)
+    if swid_original != swid:
+        print(f"SWID normalized: '{swid_original[:30]}...' -> '{swid[:30]}...'")
     league_id = league_id or YOUR_LEAGUE_ID
     team_id = team_id or YOUR_TEAM_ID
     year = year or YOUR_YEAR
+    
+    # Log credentials being used (masked for security)
+    print(f"Attempting ESPN connection - LeagueID: {league_id}, TeamID: {team_id}, Year: {year}")
+    print(f"ESPNS2 length: {len(espn_s2)}, SWID format: {swid[:20]}...{swid[-5:] if len(swid) > 25 else swid}")
+    print(f"SWID starts with {{: {swid.startswith('{')}, ends with }}: {swid.endswith('}')}")
     
     try:
         league = League(
@@ -54,7 +62,9 @@ def get_league_and_team(espn_s2=None, swid=None, league_id=None, team_id=None, y
         )
     except Exception as e:
         error_msg = str(e)
-        print(f"ESPN League initialization error: {error_msg}")
+        error_type = type(e).__name__
+        print(f"ESPN League initialization error (type: {error_type}): {error_msg}")
+        print(f"Full error details: {repr(e)}")
         # Check for common ESPN API errors
         if '403' in error_msg or 'Forbidden' in error_msg:
             raise Exception("ESPN returned HTTP 403: Your credentials may be expired or you don't have access to this league. Please refresh your ESPN cookies.")

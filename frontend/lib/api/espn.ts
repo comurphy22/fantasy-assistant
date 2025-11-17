@@ -41,6 +41,13 @@ export async function saveESPNCredentials(
   return data;
 }
 
+export async function disconnectESPN(): Promise<{ message: string; connected: boolean }> {
+  const { data } = await apiClient.delete<{ message: string; connected: boolean }>(
+    "/espn/credentials"
+  );
+  return data;
+}
+
 export async function fetchESPNStatus(): Promise<ESPNStatusResponse> {
   const { data } = await apiClient.get<ESPNStatusResponse>("/espn/status");
   return data;

@@ -13,6 +13,7 @@ import {
   fetchESPNStatus,
   fetchESPNRoster,
   saveESPNCredentials,
+  disconnectESPN,
   optimizeESPNLineup,
   fetchFreeAgents,
   getAIStartSitAdvice,
@@ -136,6 +137,25 @@ export default function FantasyPage() {
     } catch (err) {
       console.error(err);
       setEspnError("Failed to save ESPN credentials. Please check your input.");
+    } finally {
+      setEspnLoading(false);
+    }
+  };
+
+  const handleESPNDisconnect = async () => {
+    setEspnLoading(true);
+    setEspnError(null);
+    try {
+      await disconnectESPN();
+      setEspnConnected(false);
+      setEspnRoster([]);
+      setShowESPNForm(false);
+      setSuccess("ESPN account disconnected successfully!");
+      // Refresh status
+      await loadESPNData();
+    } catch (err) {
+      console.error(err);
+      setEspnError("Failed to disconnect ESPN account. Please try again.");
     } finally {
       setEspnLoading(false);
     }
@@ -585,6 +605,14 @@ export default function FantasyPage() {
                 >
                   <RefreshCcw size={14} />
                   Refresh
+                </button>
+                <button
+                  onClick={handleESPNDisconnect}
+                  disabled={espnLoading}
+                  className="inline-flex items-center gap-2 rounded-lg border border-red-300 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-100 hover:border-red-400 disabled:opacity-50"
+                  title="Disconnect ESPN account to test with different credentials"
+                >
+                  Disconnect
                 </button>
               </div>
             </div>
