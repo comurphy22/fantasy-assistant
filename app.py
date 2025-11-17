@@ -10,7 +10,9 @@ load_dotenv()
 app = Flask(__name__)
 
 # Configure CORS to allow requests from Go backend
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}})
+# Allow requests from localhost (dev) and Railway (production)
+allowed_origins = os.getenv('ALLOWED_ORIGINS', 'http://localhost:8080,https://fantasy-assistant-production.up.railway.app').split(',')
+CORS(app, resources={r"/api/*": {"origins": allowed_origins}})
 
 # Default credentials (can be overridden via request headers or environment)
 YOUR_LEAGUE_ID = int(os.getenv('ESPN_LEAGUE_ID', 929602296))
@@ -335,4 +337,6 @@ Be concise and direct."""
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(port=5002, debug=True)
+    # Use PORT environment variable (Railway provides this) or default to 5002
+    port = int(os.getenv('PORT', 5002))
+    app.run(host='0.0.0.0', port=port, debug=False)
