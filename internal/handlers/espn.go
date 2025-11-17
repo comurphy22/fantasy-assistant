@@ -27,6 +27,20 @@ func NewESPNHandler(db *mongo.Database, flaskServiceURL string) *ESPNHandler {
 	}
 }
 
+// maskCredential masks a credential string for logging (shows first 10 and last 5 chars)
+func maskCredential(cred string) string {
+	if len(cred) > 15 {
+		return cred[:10] + "..." + cred[len(cred)-5:]
+	}
+	return "***"
+}
+
+// logESPNRequest logs ESPN request details with masked credentials
+func (h *ESPNHandler) logESPNRequest(endpoint string, user models.User) {
+	fmt.Printf("ESPN %s: Calling Flask with LeagueID=%d, TeamID=%d, Year=%d, ESPNS2=%s, SWID=%s\n",
+		endpoint, user.LeagueID, user.TeamID, user.Year, maskCredential(user.ESPNS2), maskCredential(user.ESPNSWID))
+}
+
 type ESPNCredentials struct {
 	ESPNS2   string `json:"espn_s2" binding:"required"`
 	ESPNSWID string `json:"espn_swid" binding:"required"`
@@ -191,21 +205,8 @@ func (h *ESPNHandler) GetRoster(c *gin.Context) {
 	req.Header.Set("X-ESPN-TEAM-ID", fmt.Sprintf("%d", user.TeamID))
 	req.Header.Set("X-ESPN-YEAR", fmt.Sprintf("%d", user.Year))
 	
-	// Log for debugging (mask credentials for security)
-	espnS2Masked := ""
-	if len(user.ESPNS2) > 10 {
-		espnS2Masked = user.ESPNS2[:10] + "..." + user.ESPNS2[len(user.ESPNS2)-5:]
-	} else {
-		espnS2Masked = "***"
-	}
-	swidMasked := ""
-	if len(user.ESPNSWID) > 10 {
-		swidMasked = user.ESPNSWID[:10] + "..."
-	} else {
-		swidMasked = "***"
-	}
-	fmt.Printf("ESPN GetRoster: Calling Flask with LeagueID=%d, TeamID=%d, Year=%d, ESPNS2=%s, SWID=%s\n", 
-		user.LeagueID, user.TeamID, user.Year, espnS2Masked, swidMasked)
+	// Log for debugging
+	h.logESPNRequest("GetRoster", user)
 	
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -285,6 +286,9 @@ func (h *ESPNHandler) OptimizeLineup(c *gin.Context) {
 	req.Header.Set("X-ESPN-LEAGUE-ID", fmt.Sprintf("%d", user.LeagueID))
 	req.Header.Set("X-ESPN-TEAM-ID", fmt.Sprintf("%d", user.TeamID))
 	req.Header.Set("X-ESPN-YEAR", fmt.Sprintf("%d", user.Year))
+	
+	// Log for debugging
+	h.logESPNRequest("OptimizeLineup", user)
 	
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -383,6 +387,9 @@ func (h *ESPNHandler) GetFreeAgents(c *gin.Context) {
 	req.Header.Set("X-ESPN-LEAGUE-ID", fmt.Sprintf("%d", user.LeagueID))
 	req.Header.Set("X-ESPN-TEAM-ID", fmt.Sprintf("%d", user.TeamID))
 	req.Header.Set("X-ESPN-YEAR", fmt.Sprintf("%d", user.Year))
+	
+	// Log for debugging
+	h.logESPNRequest("GetFreeAgents", user)
 	
 	client := &http.Client{}
 	resp, err := client.Do(req)
