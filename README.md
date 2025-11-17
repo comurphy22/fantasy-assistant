@@ -1,7 +1,6 @@
 
 https://github.com/user-attachments/assets/b84559d6-479c-4479-96e9-03c82fe48a01
 
-https://github.com/user-attachments/assets/99220b97-1b73-4cae-b1c0-53a9ade50b38
 # AI-ATL NFL Platform
 
 > AI-Powered NFL Fantasy & Analytics Platform - Built for ATL Hackathon 2025
