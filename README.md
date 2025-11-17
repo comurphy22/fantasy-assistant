@@ -4,6 +4,12 @@ https://github.com/user-attachments/assets/b84559d6-479c-4479-96e9-03c82fe48a01
 
 > AI-Powered NFL Fantasy & Analytics Platform - Built for ATL Hackathon 2025
 
+## 🌐 Live Deployment
+
+**🎮 Try it now**: [https://fantasy-assistant-k9pl.vercel.app](https://fantasy-assistant-k9pl.vercel.app)
+
+The application is fully deployed and ready to use!
+
 ## 🎯 What We Built
 
 An NFL fantasy platform that predicts **HOW games will unfold** using AI, not just final scores. We combine NFLverse's advanced EPA metrics with Google Gemini AI to give fantasy players quantified, data-driven insights.
@@ -56,6 +62,40 @@ go run cmd/api/main.go
 The API will be available at `http://localhost:8080`
 
 ## 🌐 Deployment
+
+### Current Deployment Architecture
+
+The application is deployed using a **100% free tier** setup:
+
+- **Frontend (Next.js)**: Deployed on [Vercel](https://vercel.com) (Free tier)
+  - URL: [https://fantasy-assistant-k9pl.vercel.app](https://fantasy-assistant-k9pl.vercel.app)
+  - Automatic deployments from `main` branch
+  - Root directory: `frontend/`
+
+- **Backend (Go API)**: Deployed on [Railway](https://railway.app) (Free tier with $5/month credit)
+  - URL: `https://fantasy-assistant-production.up.railway.app`
+  - Automatic deployments from `main` branch
+  - Environment variables configured in Railway dashboard
+
+- **Flask Service (ESPN Integration)**: Deployed on Railway (separate service)
+  - Handles ESPN Fantasy Football API calls
+  - Root directory: `flask-service/`
+  - Communicates with Go API via HTTP headers
+
+- **Database**: [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (Free M0 tier)
+  - 512MB storage
+  - Connection string stored as `MONGO_URI` in Railway
+
+### Deployment Flow
+
+1. **Code Push**: Changes pushed to `main` branch on GitHub
+2. **Auto-Deploy**: 
+   - Vercel automatically builds and deploys the frontend
+   - Railway automatically builds and deploys the backend and Flask service
+3. **Environment Variables**: Configured in each platform's dashboard
+4. **Database**: MongoDB Atlas provides persistent storage
+
+### Deployment Guides
 
 **🎓 Free Deployment for Students**: See [`FREE_DEPLOYMENT_GUIDE.md`](./FREE_DEPLOYMENT_GUIDE.md) for step-by-step instructions to deploy completely free using:
 
