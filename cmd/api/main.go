@@ -53,6 +53,19 @@ func main() {
 	router.Use(middleware.CORS())
 	router.Use(middleware.RequestLogger())
 
+	// Root route
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "NFL Platform API",
+			"version": "1.0.0",
+			"status":  "running",
+			"endpoints": gin.H{
+				"health": "/health",
+				"api":    "/api/v1",
+			},
+		})
+	})
+
 	// Health check
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
