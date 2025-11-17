@@ -171,6 +171,11 @@ func (h *ESPNHandler) GetRoster(c *gin.Context) {
 		return
 	}
 
+	if user.LeagueID == 0 || user.TeamID == 0 || user.Year == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ESPN league/team/year not configured"})
+		return
+	}
+
 	// Call Flask service to get roster
 	flaskURL := fmt.Sprintf("%s/api/espn/roster", h.flaskServiceURL)
 	req, err := http.NewRequest("GET", flaskURL, nil)
@@ -185,6 +190,9 @@ func (h *ESPNHandler) GetRoster(c *gin.Context) {
 	req.Header.Set("X-ESPN-LEAGUE-ID", fmt.Sprintf("%d", user.LeagueID))
 	req.Header.Set("X-ESPN-TEAM-ID", fmt.Sprintf("%d", user.TeamID))
 	req.Header.Set("X-ESPN-YEAR", fmt.Sprintf("%d", user.Year))
+	
+	// Log for debugging
+	fmt.Printf("ESPN GetRoster: Calling Flask with LeagueID=%d, TeamID=%d, Year=%d\n", user.LeagueID, user.TeamID, user.Year)
 	
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -239,6 +247,11 @@ func (h *ESPNHandler) OptimizeLineup(c *gin.Context) {
 
 	if user.ESPNS2 == "" || user.ESPNSWID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "ESPN credentials not configured"})
+		return
+	}
+
+	if user.LeagueID == 0 || user.TeamID == 0 || user.Year == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ESPN league/team/year not configured"})
 		return
 	}
 
@@ -325,6 +338,11 @@ func (h *ESPNHandler) GetFreeAgents(c *gin.Context) {
 
 	if user.ESPNS2 == "" || user.ESPNSWID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "ESPN credentials not configured"})
+		return
+	}
+
+	if user.LeagueID == 0 || user.TeamID == 0 || user.Year == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ESPN league/team/year not configured"})
 		return
 	}
 

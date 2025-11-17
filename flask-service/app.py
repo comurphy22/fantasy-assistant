@@ -54,14 +54,24 @@ def get_my_roster():
         # Get credentials from request headers (sent by Go API)
         espn_s2 = request.headers.get('X-ESPN-S2')
         swid = request.headers.get('X-ESPN-SWID')
-        league_id = request.headers.get('X-ESPN-LEAGUE-ID')
-        team_id = request.headers.get('X-ESPN-TEAM-ID')
-        year = request.headers.get('X-ESPN-YEAR')
+        league_id_str = request.headers.get('X-ESPN-LEAGUE-ID')
+        team_id_str = request.headers.get('X-ESPN-TEAM-ID')
+        year_str = request.headers.get('X-ESPN-YEAR')
+        
+        # Validate required credentials
+        if not espn_s2 or not swid:
+            return jsonify({'error': 'Missing ESPN credentials (espn_s2 or swid)'}), 400
+        
+        if not league_id_str or not team_id_str or not year_str:
+            return jsonify({'error': 'Missing league/team/year information'}), 400
         
         # Convert to appropriate types
-        league_id = int(league_id) if league_id else None
-        team_id = int(team_id) if team_id else None
-        year = int(year) if year else None
+        try:
+            league_id = int(league_id_str)
+            team_id = int(team_id_str)
+            year = int(year_str)
+        except ValueError as e:
+            return jsonify({'error': f'Invalid league/team/year format: {str(e)}'}), 400
         
         league, team, error = get_league_and_team(
             espn_s2=espn_s2,
@@ -110,7 +120,15 @@ def get_my_roster():
         return jsonify(roster_data)
     
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        error_msg = str(e)
+        # Check if it's an ESPN API error
+        if '403' in error_msg or 'Forbidden' in error_msg:
+            return jsonify({'error': 'ESPN returned an HTTP 403. Your credentials may be expired or invalid. Please refresh your ESPN cookies.'}), 403
+        elif '401' in error_msg or 'Unauthorized' in error_msg:
+            return jsonify({'error': 'ESPN returned an HTTP 401. Your credentials are invalid.'}), 401
+        else:
+            print(f"ESPN roster error: {error_msg}")
+            return jsonify({'error': f'ESPN API error: {error_msg}'}), 500
 
 @app.route('/api/espn/optimize-lineup', methods=['GET'])
 def optimize_lineup():
@@ -118,13 +136,23 @@ def optimize_lineup():
         # Get credentials from request headers
         espn_s2 = request.headers.get('X-ESPN-S2')
         swid = request.headers.get('X-ESPN-SWID')
-        league_id = request.headers.get('X-ESPN-LEAGUE-ID')
-        team_id = request.headers.get('X-ESPN-TEAM-ID')
-        year = request.headers.get('X-ESPN-YEAR')
+        league_id_str = request.headers.get('X-ESPN-LEAGUE-ID')
+        team_id_str = request.headers.get('X-ESPN-TEAM-ID')
+        year_str = request.headers.get('X-ESPN-YEAR')
         
-        league_id = int(league_id) if league_id else None
-        team_id = int(team_id) if team_id else None
-        year = int(year) if year else None
+        # Validate required credentials
+        if not espn_s2 or not swid:
+            return jsonify({'error': 'Missing ESPN credentials (espn_s2 or swid)'}), 400
+        
+        if not league_id_str or not team_id_str or not year_str:
+            return jsonify({'error': 'Missing league/team/year information'}), 400
+        
+        try:
+            league_id = int(league_id_str)
+            team_id = int(team_id_str)
+            year = int(year_str)
+        except ValueError as e:
+            return jsonify({'error': f'Invalid league/team/year format: {str(e)}'}), 400
         
         league, team, error = get_league_and_team(
             espn_s2=espn_s2,
@@ -221,13 +249,23 @@ def get_free_agents():
         # Get credentials from request headers
         espn_s2 = request.headers.get('X-ESPN-S2')
         swid = request.headers.get('X-ESPN-SWID')
-        league_id = request.headers.get('X-ESPN-LEAGUE-ID')
-        team_id = request.headers.get('X-ESPN-TEAM-ID')
-        year = request.headers.get('X-ESPN-YEAR')
+        league_id_str = request.headers.get('X-ESPN-LEAGUE-ID')
+        team_id_str = request.headers.get('X-ESPN-TEAM-ID')
+        year_str = request.headers.get('X-ESPN-YEAR')
         
-        league_id = int(league_id) if league_id else None
-        team_id = int(team_id) if team_id else None
-        year = int(year) if year else None
+        # Validate required credentials
+        if not espn_s2 or not swid:
+            return jsonify({'error': 'Missing ESPN credentials (espn_s2 or swid)'}), 400
+        
+        if not league_id_str or not team_id_str or not year_str:
+            return jsonify({'error': 'Missing league/team/year information'}), 400
+        
+        try:
+            league_id = int(league_id_str)
+            team_id = int(team_id_str)
+            year = int(year_str)
+        except ValueError as e:
+            return jsonify({'error': f'Invalid league/team/year format: {str(e)}'}), 400
         
         league, team, error = get_league_and_team(
             espn_s2=espn_s2,
