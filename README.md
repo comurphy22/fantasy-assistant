@@ -6,6 +6,12 @@
 
 An NFL fantasy platform that predicts **HOW games will unfold** using AI, not just final scores. We combine NFLverse's advanced EPA metrics with Google Gemini AI to give fantasy players quantified, data-driven insights.
 
+<img width="1254" height="745" alt="Screenshot 2025-11-17 at 12 13 30 PM" src="https://github.com/user-attachments/assets/8ff0cc84-fb44-4b74-8abc-424b278f009c" />
+<img width="1258" height="860" alt="Screenshot 2025-11-17 at 12 13 54 PM" src="https://github.com/user-attachments/assets/f332ee33-1bd3-4c5b-8153-c2e96e304be1" />
+
+
+
+
 ### Novel Features
 
 1. **AI Game Script Predictor** - Predicts game flow quarter-by-quarter and player usage changes
