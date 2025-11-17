@@ -54,6 +54,24 @@ def get_league_and_team(espn_s2=None, swid=None, league_id=None, team_id=None, y
     print(f"ESPNS2 length: {len(espn_s2)}, SWID format: {swid[:20]}...{swid[-5:] if len(swid) > 25 else swid}")
     print(f"SWID starts with {{: {swid.startswith('{')}, ends with }}: {swid.endswith('}')}")
     
+    # Try direct HTTP first to verify credentials work
+    test_url = f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/{year}/segments/0/leagues/{league_id}"
+    cookies = {'swid': swid, 'espn_s2': espn_s2}
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://fantasy.espn.com/football/',
+        'Origin': 'https://fantasy.espn.com',
+        'Accept': 'application/json',
+        'Accept-Language': 'en-US,en;q=0.9'
+    }
+    
+    # Verify credentials work with direct HTTP
+    test_resp = requests.get(test_url, cookies=cookies, headers=headers, timeout=10)
+    if test_resp.status_code != 200:
+        raise Exception(f"ESPN API returned status {test_resp.status_code}. Credentials may be invalid.")
+    
+    print("Direct HTTP test passed - credentials are valid. Using espn-api library...")
+    
     try:
         league = League(
             league_id=league_id,
@@ -67,55 +85,16 @@ def get_league_and_team(espn_s2=None, swid=None, league_id=None, team_id=None, y
         print(f"ESPN League initialization error (type: {error_type}): {error_msg}")
         print(f"Full error details: {repr(e)}")
         
-        # Try to get more details by making a direct HTTP request to ESPN API
-        print("=" * 60)
-        print("DEBUGGING: Making direct HTTP request to ESPN API...")
-        try:
-            test_url = f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/{year}/segments/0/leagues/{league_id}"
-            cookies = {
-                'swid': swid,
-                'espn_s2': espn_s2
-            }
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Referer': 'https://fantasy.espn.com/football/',
-                'Origin': 'https://fantasy.espn.com',
-                'Accept': 'application/json',
-                'Accept-Language': 'en-US,en;q=0.9'
-            }
-            print(f"Direct HTTP test - URL: {test_url}")
-            print(f"Direct HTTP test - SWID: {swid[:30]}...{swid[-10:]}")
-            print(f"Direct HTTP test - ESPNS2 length: {len(espn_s2)}")
-            
-            test_resp = requests.get(test_url, cookies=cookies, headers=headers, timeout=10)
-            print(f"Direct HTTP test - Status Code: {test_resp.status_code}")
-            print(f"Direct HTTP test - Response Headers: {dict(test_resp.headers)}")
-            
-            if test_resp.status_code != 200:
-                response_text = test_resp.text[:1000] if test_resp.text else "(empty response)"
-                print(f"Direct HTTP test - Response body (first 1000 chars): {response_text}")
-                if test_resp.status_code == 403:
-                    print("=" * 60)
-                    print("ERROR: Direct HTTP test confirms 403 Forbidden")
-                    print("This means ESPN is rejecting your credentials.")
-                    print("Possible causes:")
-                    print("  1. Cookies are expired - get fresh ones from fantasy.espn.com")
-                    print("  2. Wrong league ID, team ID, or year")
-                    print("  3. You don't have access to this league")
-                    print("  4. Account mismatch - cookies from different ESPN account")
-                    print("=" * 60)
-            else:
-                print("Direct HTTP test - SUCCESS! Credentials are valid.")
-                print("The issue might be with the espn-api library.")
-        except Exception as test_err:
-            print(f"Direct HTTP test failed with exception: {type(test_err).__name__}: {test_err}")
-            import traceback
-            print(f"Traceback: {traceback.format_exc()}")
-        print("=" * 60)
-        
-        # Check for common ESPN API errors
+        # Since direct HTTP test passed, the library has an issue
+        # Check if it's a 403 error from the library
         if '403' in error_msg or 'Forbidden' in error_msg:
-            raise Exception("ESPN returned HTTP 403: Your credentials may be expired or you don't have access to this league. Please refresh your ESPN cookies.")
+            print("=" * 60)
+            print("WARNING: espn-api library returned 403, but direct HTTP test passed!")
+            print("This indicates a bug or incompatibility with the espn-api library.")
+            print("Attempting to use direct HTTP requests as fallback...")
+            print("=" * 60)
+            # We'll handle this in the calling code by using direct HTTP
+            raise Exception("ESPN library error: Direct HTTP works but library fails. This may be a library version issue.")
         elif '401' in error_msg or 'Unauthorized' in error_msg:
             raise Exception("ESPN returned HTTP 401: Your credentials are invalid.")
         else:
